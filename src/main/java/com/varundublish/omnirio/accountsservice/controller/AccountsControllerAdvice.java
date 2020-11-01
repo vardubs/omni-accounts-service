@@ -7,6 +7,7 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
@@ -15,29 +16,29 @@ import org.springframework.web.bind.annotation.RestControllerAdvice;
 @Log
 public class AccountsControllerAdvice {
 
+    //Todo to create more Exception Handler based on various Exceptions at different services
+
     private static final Logger LOGGER = LogManager.getLogger(AccountsControllerAdvice.class);
 
-    @ExceptionHandler(value = AccountServiceException.class)
-    @ResponseStatus(HttpStatus.BAD_REQUEST)
+    @ExceptionHandler(value = {AccountServiceException.class, UsernameNotFoundException.class})
+    @ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
     public ResponseEntity<CustomAccountErrorResponse> handleAccountServiceException(Exception e) {
 
-        LOGGER.error(e.getMessage());
         CustomAccountErrorResponse customErrorResponse = new CustomAccountErrorResponse();
-        customErrorResponse.setMessage(e.getMessage());
-        customErrorResponse.setStatus("400");
+        customErrorResponse.setMessage(e.getLocalizedMessage());
+        customErrorResponse.setStatus("500");
 
-        return new ResponseEntity<>(customErrorResponse, HttpStatus.BAD_REQUEST);
+        return new ResponseEntity<>(customErrorResponse, HttpStatus.INTERNAL_SERVER_ERROR);
 
     }
 
     @ExceptionHandler(value = Exception.class)
     @ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
-    public ResponseEntity<CustomAccountErrorResponse> handleExceptions(Exception e) {
+    public ResponseEntity<CustomAccountErrorResponse> handleAnyExceptions(Exception e) {
 
-        LOGGER.error(e.getMessage());
         CustomAccountErrorResponse customErrorResponse = new CustomAccountErrorResponse();
 
-        customErrorResponse.setMessage("INTERNAL_SERVER_ERROR");
+        customErrorResponse.setMessage(e.getLocalizedMessage());
         customErrorResponse.setStatus("500");
 
         return new ResponseEntity<>(customErrorResponse, HttpStatus.INTERNAL_SERVER_ERROR);

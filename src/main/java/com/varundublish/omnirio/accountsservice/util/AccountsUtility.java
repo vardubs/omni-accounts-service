@@ -2,8 +2,14 @@ package com.varundublish.omnirio.accountsservice.util;
 
 import java.time.LocalDate;
 import java.time.Period;
+import java.util.UUID;
 
-public class AccountUtility {
+public class AccountsUtility {
+
+
+    public static String generateAccountId(String branch) {
+        return "ACC-" + branch + "-" + UUID.randomUUID().toString();
+    }
 
     public static Character getMinorFlag(LocalDate dob){
 

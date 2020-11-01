@@ -1,6 +1,5 @@
 package com.varundublish.omnirio.accountsservice.security.filters;
 
-import com.varundublish.omnirio.accountsservice.security.service.MyUserDetailsService;
 import com.varundublish.omnirio.accountsservice.security.util.JwtUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
@@ -17,9 +16,6 @@ import java.io.IOException;
 
 @Component
 public class JwtRequestFilter extends OncePerRequestFilter {
-
-    @Autowired
-    private MyUserDetailsService userDetailsService;
 
     @Autowired
     private JwtUtil jwtUtil;

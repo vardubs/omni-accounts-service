@@ -21,10 +21,13 @@ public interface CustomerServiceFeignClient {
     @GetMapping("/test")
     public String testUrl();
 
+
     @PostMapping("/bm/customers")
     UserResponse addNewCustomer(@RequestHeader("Authorization") String authorizationToken, UserRequest newCustomer);
 
     @GetMapping("/bm/customers/{customerId}")
     UserResponse getExistingCustomer(@RequestHeader("Authorization") String authorizationToken, @PathVariable("customerId") Long customerId);
 
+    @GetMapping("/customers/me")
+    UserResponse getMyDetails(@RequestHeader("Authorization") String authorizationToken);
 }

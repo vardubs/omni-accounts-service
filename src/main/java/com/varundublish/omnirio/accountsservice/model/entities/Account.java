@@ -2,10 +2,9 @@ package com.varundublish.omnirio.accountsservice.model.entities;
 
 import lombok.*;
 
-import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
-import javax.persistence.Id;
+import javax.persistence.*;
+import javax.validation.constraints.NotNull;
+import java.io.Serializable;
 import java.time.LocalDate;
 
 @Entity
@@ -14,12 +13,19 @@ import java.time.LocalDate;
 @Getter
 @Setter
 @ToString
-public class Account {
+@Table(name = "ACCOUNTS")
+public class Account implements Serializable {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long accountId;
+    @Column(name = "ID")
+    @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "user_seq")
+    @SequenceGenerator(name = "user_seq", allocationSize = 1)
+    private Long id;
 
+    @Column(name = "ACCOUNT_ID", updatable = false, nullable = false)
+    private String accountId;
+
+    @NotNull(message = "accountType cannot be null")
     private String accountType;
 
     private LocalDate openDate;
@@ -28,6 +34,7 @@ public class Account {
 
     private String customerName;
 
+    @NotNull(message = "branch cannot be null")
     private String branch;
 
     private Character minorIndicator;

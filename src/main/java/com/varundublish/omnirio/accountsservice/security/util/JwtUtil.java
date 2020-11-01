@@ -14,6 +14,7 @@ import java.util.stream.Collectors;
 @Service
 public class JwtUtil {
 
+    //Todo Move this to the Config file
     private String SECRET_KEY = "secret";
 
     public String extractUsername(String token) {
