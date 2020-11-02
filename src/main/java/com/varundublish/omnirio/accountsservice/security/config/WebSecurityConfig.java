@@ -31,10 +31,9 @@ class WebSecurityConfig extends WebSecurityConfigurerAdapter {
     protected void configure(HttpSecurity httpSecurity) throws Exception {
         httpSecurity.csrf().disable()
                 .authorizeRequests()
-                //.antMatchers("/h2-console/**").permitAll()
-                //.antMatchers("/bm/**").hasAuthority("BRANCH-MANAGER")
-                //.antMatchers(HttpMethod.POST, "/bm/**").hasAuthority("BRANCH-MANAGER")
-                //.antMatchers(HttpMethod.PUT,"/bm/**").hasAuthority("BRANCH-MANAGER")
+
+                .antMatchers("/api/v1/bm/**").hasAuthority("BRANCH-MANAGER")
+                .antMatchers("/api/v1/**").hasAnyAuthority("BRANCH-MANAGER", "CUSTOMER")
                 .anyRequest().authenticated()
                 .and().
                 exceptionHandling().and().sessionManagement()

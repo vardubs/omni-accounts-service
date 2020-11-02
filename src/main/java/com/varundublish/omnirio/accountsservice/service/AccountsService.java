@@ -16,6 +16,9 @@ import org.springframework.stereotype.Service;
 
 import javax.transaction.Transactional;
 import java.time.LocalDate;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
 @Transactional
@@ -32,7 +35,7 @@ public class AccountsService {
     ModelMapper modelMapper;
 
 
-    public UserResponse getUserInfoFromCustomerService(String authToken, Long customerId){
+    public UserResponse getUserInfoFromCustomerService(String authToken, String customerId){
         UserResponse user = customerServiceClient.getExistingCustomer(authToken, customerId);
         return user;
     }
@@ -70,7 +73,7 @@ public class AccountsService {
         Account account = request.getAccount();
         account.setAccountId(AccountsUtility.generateAccountId(account.getBranch()));
         account.setCustomerId(user.getUserId());
-        account.setCustomerName(user.getUsername());
+        account.setCustomerName(user.getFirstName()+ " " + user.getLastName());
         account.setMinorIndicator(AccountsUtility.getMinorFlag(user.getDateOfBirth()));
         account.setOpenDate(LocalDate.now());
         return account;
@@ -82,11 +85,13 @@ public class AccountsService {
      * @param accountId
      * @return
      */
-    public AccountAndCustomerResponse getCustomerAccountDetails(String authToken, Long accountId) {
+    public AccountAndCustomerResponse getCustomerAccountDetails(String authToken, String accountId) {
         AccountAndCustomerResponse response = new AccountAndCustomerResponse();
-        Account account = accountsRepository.findById(accountId).orElseThrow(() -> new AccountServiceException("Account not found for Id :!" + accountId));
-        response.setAccount(modelMapper.map(account, AccountResponse.class));
-        response.setCustomer(getUserInfoFromCustomerService(authToken, account.getCustomerId()));
+        List<Account> account = accountsRepository.findByAccountId(accountId).orElseThrow(() -> new AccountServiceException("Account not found for Id :!" + accountId));
+        response.setAccount(account.stream()
+                .map((a) -> modelMapper.map(a, AccountResponse.class))
+                .collect(Collectors.toList()));
+        response.setCustomer(getUserInfoFromCustomerService(authToken, account.get(0).getCustomerId()));
         return response;
     }
 
@@ -101,11 +106,15 @@ public class AccountsService {
      * @param accountId
      * @return
      */
-    public AccountAndCustomerResponse getMyAccountDetails(String authToken, Long accountId) {
+    public AccountAndCustomerResponse getMyAccountDetails(String authToken) {
+        UserResponse user = getMyDetailsFromCustomerService(authToken);
         AccountAndCustomerResponse response = new AccountAndCustomerResponse();
-        Account account = accountsRepository.findById(accountId).orElseThrow(()->new AccountServiceException("Account Not Found for this Id" + accountId));
-        response.setAccount(modelMapper.map(account, AccountResponse.class));
-        response.setCustomer(getMyDetailsFromCustomerService(authToken));
+        List<Account> account = accountsRepository.findByCustomerId(user.getUserId()).orElse(new ArrayList<>());
+                //.orElseThrow(()->new AccountServiceException("Accounts Not Found for this Id" + user.getUserId()));
+        response.setAccount(account.stream()
+                .map((a) -> modelMapper.map(a, AccountResponse.class))
+                .collect(Collectors.toList()));
+        response.setCustomer(user);
         return response;
     }
 

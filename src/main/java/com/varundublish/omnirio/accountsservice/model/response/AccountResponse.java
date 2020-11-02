@@ -15,7 +15,7 @@ public class AccountResponse implements Serializable {
     private String accountId;
     private String accountType;
     private LocalDate openDate;
-    private Long customerId;
+    private String customerId;
     private String customerName;
     private String branch;
     private Character minorIndicator;

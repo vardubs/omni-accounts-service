@@ -1,4 +1,4 @@
-package com.varundublish.omnirio.accountsservice.controller;
+package com.varundublish.omnirio.accountsservice.exceptions.advice;
 
 import com.varundublish.omnirio.accountsservice.exceptions.AccountServiceException;
 import com.varundublish.omnirio.accountsservice.exceptions.CustomAccountErrorResponse;
@@ -23,7 +23,7 @@ public class AccountsControllerAdvice {
     @ExceptionHandler(value = {AccountServiceException.class, UsernameNotFoundException.class})
     @ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
     public ResponseEntity<CustomAccountErrorResponse> handleAccountServiceException(Exception e) {
-
+        e.printStackTrace();
         CustomAccountErrorResponse customErrorResponse = new CustomAccountErrorResponse();
         customErrorResponse.setMessage(e.getLocalizedMessage());
         customErrorResponse.setStatus("500");
@@ -35,7 +35,7 @@ public class AccountsControllerAdvice {
     @ExceptionHandler(value = Exception.class)
     @ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
     public ResponseEntity<CustomAccountErrorResponse> handleAnyExceptions(Exception e) {
-
+        e.printStackTrace();
         CustomAccountErrorResponse customErrorResponse = new CustomAccountErrorResponse();
 
         customErrorResponse.setMessage(e.getLocalizedMessage());

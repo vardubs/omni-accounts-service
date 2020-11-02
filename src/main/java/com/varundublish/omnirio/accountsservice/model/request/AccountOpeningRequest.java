@@ -14,10 +14,12 @@ import javax.validation.constraints.NotNull;
 @NoArgsConstructor
 public class AccountOpeningRequest {
 
+    //Todo Seperate this requests into 2 Seperate Requests
+
     @NotNull(message = "account cannot be null")
     Account account;
 
-    Long customerId;
+    String customerId;
 
     @NotNull(message = "existingCustomer cannot be null")
     Boolean existingCustomer;

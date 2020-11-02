@@ -22,12 +22,12 @@ public interface CustomerServiceFeignClient {
     public String testUrl();
 
 
-    @PostMapping("/bm/customers")
+    @PostMapping("/api/v1/bm/customers")
     UserResponse addNewCustomer(@RequestHeader("Authorization") String authorizationToken, UserRequest newCustomer);
 
-    @GetMapping("/bm/customers/{customerId}")
-    UserResponse getExistingCustomer(@RequestHeader("Authorization") String authorizationToken, @PathVariable("customerId") Long customerId);
+    @GetMapping("/api/v1/bm/customers/{customerId}")
+    UserResponse getExistingCustomer(@RequestHeader("Authorization") String authorizationToken, @PathVariable("customerId") String customerId);
 
-    @GetMapping("/customers/me")
+    @GetMapping("/api/v1/customers/me")
     UserResponse getMyDetails(@RequestHeader("Authorization") String authorizationToken);
 }

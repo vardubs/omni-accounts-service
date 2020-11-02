@@ -14,8 +14,9 @@ import java.util.stream.Collectors;
 @Service
 public class JwtUtil {
 
-    //Todo Move this to the Config file
-    private String SECRET_KEY = "secret";
+    //TODO Move these Constants in a Config File
+    public static final int EXPIRATION_MILLISECONDS = 1000 * 60 * 60 * 10;
+    private static final String SECRET_KEY = "secret";
 
     public String extractUsername(String token) {
         return extractClaim(token, Claims::getSubject);
@@ -46,7 +47,7 @@ public class JwtUtil {
     private String createToken(Map<String, Object> claims, String subject) {
 
         return Jwts.builder().setClaims(claims).setSubject(subject).setIssuedAt(new Date(System.currentTimeMillis()))
-                .setExpiration(new Date(System.currentTimeMillis() + 1000 * 60 * 60 * 10))
+                .setExpiration(new Date(System.currentTimeMillis() + EXPIRATION_MILLISECONDS))
                 .signWith(SignatureAlgorithm.HS256, SECRET_KEY).compact();
     }
 

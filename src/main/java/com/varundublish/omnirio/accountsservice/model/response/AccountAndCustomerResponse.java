@@ -4,10 +4,12 @@ import lombok.Getter;
 import lombok.Setter;
 import lombok.ToString;
 
+import java.util.List;
+
 @Getter
 @Setter
 @ToString
 public class AccountAndCustomerResponse {
-    private AccountResponse account;
+    private List<AccountResponse> account;
     private UserResponse customer;
 }

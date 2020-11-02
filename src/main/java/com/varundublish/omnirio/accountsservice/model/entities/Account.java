@@ -18,11 +18,11 @@ public class Account implements Serializable {
 
     @Id
     @Column(name = "ID")
-    @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "user_seq")
-    @SequenceGenerator(name = "user_seq", allocationSize = 1)
+    @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "account_seq")
+    @SequenceGenerator(name = "account_seq", allocationSize = 1)
     private Long id;
 
-    @Column(name = "ACCOUNT_ID", updatable = false, nullable = false)
+    @Column(name = "ACCOUNT_ID", updatable = false, nullable = false, unique = true)
     private String accountId;
 
     @NotNull(message = "accountType cannot be null")
@@ -30,7 +30,7 @@ public class Account implements Serializable {
 
     private LocalDate openDate;
 
-    private Long customerId;
+    private String customerId;
 
     private String customerName;
 

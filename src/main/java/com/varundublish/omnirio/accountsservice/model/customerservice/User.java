@@ -12,7 +12,9 @@ import java.util.Objects;
 @ToString
 public class User {
 
-    private Long userId;
+    private String userId;
+    private String firstName;
+    private String lastName;
     private String username;
     private String password;
     private LocalDate dateOfBirth;

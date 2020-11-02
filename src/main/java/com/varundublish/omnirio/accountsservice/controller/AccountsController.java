@@ -5,7 +5,10 @@ import com.varundublish.omnirio.accountsservice.model.response.AccountAndCustome
 import com.varundublish.omnirio.accountsservice.model.response.AccountResponse;
 import com.varundublish.omnirio.accountsservice.service.AccountsService;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.hateoas.EntityModel;
+import org.springframework.hateoas.server.mvc.WebMvcLinkBuilder;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
@@ -16,30 +19,44 @@ import javax.validation.Valid;
  *
  */
 @RestController
-@RequestMapping("/api")
+@RequestMapping("/api/v1")
 public class AccountsController {
 
     @Autowired
     private AccountsService accountsService;
 
-
-    @PreAuthorize("hasRole('CUSTOMER')")
-    @GetMapping("/accounts/{accountId}")
-    public AccountAndCustomerResponse getMyAccountDetails(@RequestHeader("Authorization") String authToken, @PathVariable("accountId") Long accountId){
-        return accountsService.getMyAccountDetails(authToken, accountId);
+    @GetMapping("/accounts/myaccounts")
+    public ResponseEntity<?> getMyAccountDetails(@RequestHeader("Authorization") String authToken){
+        AccountAndCustomerResponse response =  accountsService.getMyAccountDetails(authToken);
+        return new ResponseEntity<>(response, HttpStatus.OK);
     }
 
-    @PreAuthorize("hasRole('BRANCH-MANAGER')")
+
     @GetMapping("/bm/accounts/{accountId}")
-    public AccountAndCustomerResponse getCustomerAccountDetails(@RequestHeader("Authorization") String authToken, @PathVariable("accountId") Long accountId){
-        return accountsService.getCustomerAccountDetails(authToken, accountId);
+    public ResponseEntity<?> getCustomerAccountDetails(@RequestHeader("Authorization") String authToken, @PathVariable("accountId") String accountId){
+
+        AccountAndCustomerResponse accountResponse = accountsService.getCustomerAccountDetails(authToken, accountId);
+
+        EntityModel<AccountAndCustomerResponse> resource = EntityModel.of(accountResponse);
+        resource.add(WebMvcLinkBuilder.linkTo(WebMvcLinkBuilder.methodOn(this.getClass()).getCustomerAccountDetails(authToken,  accountResponse.getCustomer().getUserId())).withRel("customer-details"));
+        resource.add(WebMvcLinkBuilder.linkTo(WebMvcLinkBuilder.methodOn(this.getClass()).deleteAccount(authToken,  accountResponse.getAccount().get(0).getAccountId())).withRel("delete-account"));
+        return new ResponseEntity<>(resource, HttpStatus.OK);
     }
 
-    @PreAuthorize("hasRole('BRANCH-MANAGER')")
     @PostMapping("/bm/accounts/open")
-    public AccountResponse openNewAccount(@RequestHeader("Authorization") String authToken, @Valid @RequestBody AccountOpeningRequest request){
-        return accountsService.openAccount(authToken, request);
+    public ResponseEntity<?>  openNewAccount(@RequestHeader("Authorization") String authToken, @Valid @RequestBody AccountOpeningRequest request){
+        AccountResponse accountResponse =  accountsService.openAccount(authToken, request);
+        EntityModel<AccountResponse> resource = EntityModel.of(accountResponse);
+        resource.add(WebMvcLinkBuilder.linkTo(WebMvcLinkBuilder.methodOn(this.getClass()).getCustomerAccountDetails(authToken,  accountResponse.getCustomerId())).withRel("customer-details"));
+        resource.add(WebMvcLinkBuilder.linkTo(WebMvcLinkBuilder.methodOn(this.getClass()).deleteAccount(authToken,  accountResponse.getAccountId())).withRel("delete-account"));
+        return new ResponseEntity<>(resource, HttpStatus.CREATED);
     }
 
+    @DeleteMapping("/bm/accounts/{accountId}")
+    public ResponseEntity<?>  deleteAccount(@RequestHeader("Authorization") String authToken, @PathVariable("accountId") String accountId){
+        //TODO Sample Response
+        String response =  "Account Deleted !";
+        return new ResponseEntity<>(response, HttpStatus.OK);
+    }
 
 }
